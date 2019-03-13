@@ -6,12 +6,18 @@ var messageFormElement = document.getElementById('message-form');
 var messageInputElement = document.getElementById('message');
 var submitButtonElement = document.getElementById('submit');
 
+var testFormElement = document.getElementById('test-form');
+var testAInputElement = document.getElementById('testA');
+var testBInputElement = document.getElementById('testB');
+var submit2ButtonElement = document.getElementById('submit2');
+
 var targetNumber = 5678;
 var userGuessedNumbers = [];
 
 // Template for messages.
 var MESSAGE_TEMPLATE =
     '<div class="message-container">' +
+    '<div class="spacing"><div class="pic"></div></div>' +
       '<div class="number"></div>' +
       '<div class="result"></div>' +
     '</div>';
@@ -112,7 +118,7 @@ function onMessageFormSubmit(e) {
   e.preventDefault();
   // Check that the user entered a message
   if (messageInputElement.value) {
-    submitNewNumber(messageInputElement.value).then(function() {
+    submitNewNumber(messageInputElement.value.trim()).then(function() {
       // Clear message text field and re-enable the SEND button.
       resetMaterialTextfield(messageInputElement);
       toggleButton();

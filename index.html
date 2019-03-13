@@ -58,7 +58,7 @@
           <div id="messages"></div>
           <form id="message-form" action="#">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-              <input class="mdl-textfield__input" type="text" id="message">
+              <input class="mdl-textfield__input" type="number" min="0123" max="9876" id="message">
               <label class="mdl-textfield__label" for="message">Message...</label>
             </div>
             <button id="submit" disabled type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
@@ -66,6 +66,23 @@
             </button>
             <button id="reset" type="reset" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
                 Reset
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tests container -->
+      <div id="tests-card" class="mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--6-col-tablet mdl-cell--6-col-desktop">
+        <div class="mdl-card__supporting-text mdl-color-text--grey-600">
+          <div id="tests"></div>
+          <form id="test-form" action="#">
+            <div class="mdl-textfield">
+              <input class="mdl-slider mdl-js-slider" type="range" min="0" max="4" value="0" id="testA">
+              <input class="mdl-slider mdl-js-slider" type="range" min="0" max="4" value="0" id="testB">
+            </div>
+            <span id="testAB_show">0A0B</span>
+            <button id="submit2" type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+              Submit
             </button>
           </form>
         </div>
