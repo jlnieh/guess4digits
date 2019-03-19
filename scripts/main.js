@@ -6,18 +6,23 @@ var messageFormElement = document.getElementById('message-form');
 var messageInputElement = document.getElementById('message');
 var submitButtonElement = document.getElementById('submit');
 
+var testListElement = document.getElementById('tests');
 var testFormElement = document.getElementById('test-form');
 var testAInputElement = document.getElementById('testA');
 var testBInputElement = document.getElementById('testB');
+var testABDisplayElement = document.getElementById('testAB_show');
 var submit2ButtonElement = document.getElementById('submit2');
 
-var targetNumber = 5678;
+var targetNumber = '5678';
 var userGuessedNumbers = [];
+
+var testNumbers = [];
+var lastTest = '';
 
 // Template for messages.
 var MESSAGE_TEMPLATE =
     '<div class="message-container">' +
-    '<div class="spacing"><div class="pic"></div></div>' +
+      '<div class="spacing"><div class="pic"></div></div>' +
       '<div class="number"></div>' +
       '<div class="result"></div>' +
     '</div>';
@@ -77,14 +82,12 @@ function check4Digits(guessNum) {
   });
 }
 
-function compare4Digits(guessStr) {
+function compare4Digits(targetStr, guessStr) {
   var i, j;
-  var tgtStr = targetNumber.toString();
   var A=0, B=0;
-  
   for (i=0; i<4; i++) {
     for (j=0; j<4; j++) {
-      if (tgtStr[i] == guessStr[j]) {
+      if (targetStr[i] == guessStr[j]) {
         if (i==j) {
           A++;
         }
@@ -101,7 +104,9 @@ function compare4Digits(guessStr) {
 // Saves a new message on the Cloud Firestore.
 function submitNewNumber(messageText) {
   // Add a new message entry to the Firebase database.
-  return check4Digits(messageText).then(compare4Digits).then(function(result){
+  return check4Digits(messageText).then(function(guessStr){
+    return compare4Digits(targetNumber, guessStr);
+  }).then(function(result){
     userGuessedNumbers.push([messageText, result[0] + 'A' + result[1] + 'B']);
     appendNewResult();
 
@@ -126,6 +131,12 @@ function onMessageFormSubmit(e) {
   }
 }
 
+function toggleResult() {
+  var ansA = parseInt(testAInputElement.value);
+  var ansB = parseInt(testBInputElement.value);
+  testABDisplayElement.innerHTML = ansA + 'A' + ansB + 'B';
+}
+
 function generateNewTarget() {
   var seedNum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   var scrambleRounds = 300 + Math.floor(Math.random() * 100);
@@ -141,24 +152,129 @@ function generateNewTarget() {
     scrambleRounds--;
   }
 
-  targetNumber = seedNum[0] * 1000 + seedNum[1] * 100 + seedNum[2] * 10 + seedNum[3];
+  targetNumber = seedNum[0].toString() + seedNum[1].toString() + seedNum[2].toString() + seedNum[3].toString();
   return targetNumber;
 }
+
+function resetAllTests() {
+  testNumbers.length = 0;
+  for (var i=0; i<10; i++){
+    for (var j=0; j<10; j++) {
+      if (j == i) continue;
+      for (var k=0; k<10; k++){
+        if ((k==j) || (k==i)) continue;
+        for (var l=0; l<10; l++) {
+          if ((l==k) || (l==j) || (l==i)) continue;
+          testNumbers.push(i.toString()+j.toString()+k.toString()+l.toString());
+        }
+      }
+    }
+  }
+}
+
+function appendNewTest(testStr, resultStr) {
+  var id = 't' + testStr;
+  var div = document.getElementById(id);
+  
+  if (!div) {
+    var container = document.createElement('div');
+    container.innerHTML = MESSAGE_TEMPLATE;
+    div = container.firstChild;
+    div.setAttribute('id', id);
+    testListElement.insertBefore(div, null);
+  }
+
+  div.querySelector('.number').textContent = testStr;
+  if (resultStr) {
+    div.querySelector('.result').textContent = resultStr;
+  }
+  div.querySelector('.pic').style.backgroundImage = "url('images/firebase-logo.png')";
+
+  // Show the card fading-in and scroll to view the new message.
+  setTimeout(function() {div.classList.add('visible')}, 1);
+  testListElement.scrollTop = testListElement.scrollHeight;
+  testAInputElement.focus();
+}
+function guessNewTest() {
+  var chooseOne = Math.floor(Math.random() * (testNumbers.length));
+  return testNumbers[chooseOne];
+}
+
+function checkNewTest(ansA, ansB) {
+  return new Promise(function(resolve, reject) {
+    if ((ansA + ansB) > 4) {
+      reject("Imposible answer if A+B > 4!");
+    }
+    resolve([ansA, ansB]);
+  });
+}
+
+function onTestFormSubmit(e) {
+  e.preventDefault();
+  
+  // Check that the user entered a message
+  var ansA = parseInt(testAInputElement.value);
+  var ansB = parseInt(testBInputElement.value);
+  appendNewTest(lastTest, ansA + 'A' + ansB + 'B');
+
+  if (4==ansA) {
+    alert('Ha! Ha! I win!');
+    return;
+  }
+  
+  checkNewTest(ansA, ansB).then(function (){
+    var newTests = [];
+    for (var i=0; i<testNumbers.length; i++) {
+      var testResult = compare4Digits(lastTest, testNumbers[i]);
+      if ((testResult[0] == ansA) && (testResult[1] == ansB)) {
+        newTests.push(testNumbers[i]);
+      }
+    }
+    testNumbers = newTests;
+    return testNumbers.length;
+  }).then(function(len){
+    if (len < 1) {
+      alert("Imposible! I cannot find the correct answer!");
+    }
+    else {
+      lastTest = guessNewTest();
+      appendNewTest(lastTest, null);
+    }
+  }).catch(function(errMsg){
+    alert(errMsg);
+  });
+}
+
 function onMessageFormReset(e) {
   e.preventDefault();
   
   while(messageListElement.firstChild) {
     messageListElement.removeChild(messageListElement.firstChild);
   }
+
+  while(testListElement.firstChild) {
+    testListElement.removeChild(testListElement.firstChild);
+  }
   
+  generateNewTarget();
+  resetAllTests();
+  lastTest = guessNewTest();
+  appendNewTest(lastTest, null);
 }
 
 // Saves message on form submit.
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
 messageFormElement.addEventListener('reset', onMessageFormReset);
+testFormElement.addEventListener('submit', onTestFormSubmit);
 
 // Toggle for the button.
 messageInputElement.addEventListener('keyup', toggleButton);
 messageInputElement.addEventListener('change', toggleButton);
 
+testAInputElement.addEventListener('change', toggleResult);
+testBInputElement.addEventListener('change', toggleResult);
+
 generateNewTarget();
+resetAllTests();
+lastTest = guessNewTest();
+appendNewTest(lastTest, null);
