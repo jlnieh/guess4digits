@@ -1,7 +1,7 @@
 {
   "name": "Guess 4 Digits",
-  "short_name": "G4",
-  "start_url": "/web1/index.html",
+  "short_name": "G4D",
+  "start_url": "/index.html",
   "display": "standalone",
   "orientation": "portrait"
 }

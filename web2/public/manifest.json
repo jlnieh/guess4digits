@@ -1,0 +1,8 @@
+{
+  "name": "Guess 4 Digits",
+  "short_name": "G4D",
+  "start_url": "/guest.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "gcm_sender_id": "103953800507"
+}
