@@ -8,8 +8,10 @@ In order to learn GCP Firebase, I try to setup this project repository to record
   2. Firebase trial: 
       - [User as guest](web2/guest.html)
       - [User as host](web2/host.html)
-      - [Competition](web2/game.html)
+  3. Firebase trial: 
+      - [User as guest](web3/guest.html)
+      - [User as host](web3/host.html)
+      - [Competition](web3/game.html)
       - One host vs. many guests
-
 ## License
 Since the samples from Firebase Codelab are using the Apache License 2.0, I will try to use the same one. See [LICENSE](LICENSE) 

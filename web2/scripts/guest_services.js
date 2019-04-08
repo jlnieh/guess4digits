@@ -1,0 +1,142 @@
+/**
+ * Copyright 2019 Jong-Liang Nieh All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+var targetNumber = '5678';
+var testNumbers = [];
+
+function _resortHints() {
+    if (testNumbers.length > 3) {
+        var scrambleRounds = testNumbers.length * 2;
+        while (scrambleRounds > 0) {
+            var i = Math.floor(Math.random() * (testNumbers.length - 1));
+            var t = testNumbers[0];
+            testNumbers[0] = testNumbers[i];
+            testNumbers[i] = t;
+            scrambleRounds--;
+        }
+    }
+}
+
+function _generateNewTarget() {
+    var seedNum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    var scrambleRounds = 300 + Math.floor(Math.random() * 100);
+
+    while (scrambleRounds > 0){
+      var i = Math.floor(seedNum.length * Math.random());
+      var j = Math.floor(seedNum.length * Math.random());
+      if (i!=j) {
+        var t = seedNum[i];
+        seedNum[i] = seedNum[j];
+        seedNum[j] = t;
+      }
+      scrambleRounds--;
+    }
+
+    return seedNum[0].toString() + seedNum[1].toString() + seedNum[2].toString() + seedNum[3].toString();
+}
+
+// export utilities
+function check4Digits(guessNum) {
+    return new Promise(function(resolve, reject) {
+      var i, j;
+      var guessStr = guessNum.toString();
+
+      if(!/(^\d{4}$)/.test(guessStr)) {
+        reject('It must be a 4-digits-number that you guessed!');
+      }
+      for (i=1; i<4; i++){
+        for (j=0; j<i; j++) {
+          if (guessStr[i] == guessStr[j]) {
+            reject('The number must have different digits!');
+          }
+        }
+      }
+      resolve(guessStr);
+    });
+}
+
+function compare4Digits(targetStr, guessStr) {
+    var i, j;
+    var A=0, B=0;
+    for (i=0; i<4; i++) {
+      for (j=0; j<4; j++) {
+        if (targetStr[i] == guessStr[j]) {
+          if (i==j) {
+            A++;
+          }
+          else {
+            B++;
+          }
+        }
+      }
+    }
+    return ([A, B]);
+}
+
+// export services
+function startNewGame() {
+    return new Promise(function (resolve, reject) {
+        targetNumber = _generateNewTarget();
+        resolve();
+    });
+}
+
+function submitNewNumber(guessNumber) {
+    return check4Digits(guessNumber)
+                .then(function (guessStr) {
+                    var result = compare4Digits(targetNumber, guessStr);
+                    return result[0] + 'A' + result[1] + 'B';
+                });
+}
+
+function resetHints() {
+  testNumbers.length = 0;
+  for (var i=0; i<10; i++){
+    for (var j=0; j<10; j++) {
+      if (j == i) continue;
+      for (var k=0; k<10; k++){
+        if ((k==j) || (k==i)) continue;
+        for (var l=0; l<10; l++) {
+          if ((l==k) || (l==j) || (l==i)) continue;
+          testNumbers.push(i.toString()+j.toString()+k.toString()+l.toString());
+        }
+      }
+    }
+  }
+}
+
+function calcHints(guessStr, result, max=6) {
+  return new Promise(function (resolve, reject) {
+    var ansA = Number(result[0]);
+    var ansB = Number(result[2]);
+    for (var i=testNumbers.length - 1; i>=0; i--) {
+      var testResult = compare4Digits(guessStr, testNumbers[i]);
+      if ((testResult[0] != ansA) || (testResult[1] != ansB)) {
+        testNumbers.splice(i, 1);
+      }
+    }
+    
+    if (max < testNumbers.length) {
+      _resortHints();
+    }
+    else {
+      max = testNumbers.length;
+    }
+    resolve(testNumbers.slice(0, max));
+  });
+}
