@@ -183,3 +183,14 @@ main, #messages-card {
   top: -1px;
   margin-right: 5px;
 }
+
+#message-form .mdl-sliders {
+  width: calc(100% - 250px);
+  margin: 10px 0 0 10px;
+}
+
+#ansAB_show {
+  width: 50px;
+  margin: 20px 0 0 0;
+  text-align: center;
+}

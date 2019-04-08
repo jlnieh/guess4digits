@@ -203,7 +203,7 @@ function guessNewTest() {
 function checkNewTest(ansA, ansB) {
   return new Promise(function(resolve, reject) {
     if ((ansA + ansB) > 4) {
-      reject("Imposible answer if A+B > 4!");
+      reject("Impossible answer if A+B > 4!");
     }
     resolve([ansA, ansB]);
   });
@@ -234,7 +234,7 @@ function onTestFormSubmit(e) {
     return testNumbers.length;
   }).then(function(len){
     if (len < 1) {
-      alert("Imposible! I cannot find the correct answer!");
+      alert("Impossible! I cannot find the correct answer!");
     }
     else {
       lastTest = guessNewTest();

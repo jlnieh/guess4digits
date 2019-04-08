@@ -18,7 +18,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="description" content="A Guess-the-4-digits-number Puzzle Game">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guess 4 Digits - as Guest</title>
+  <title>Guess 4 Digits - as Host</title>
 
   <!-- Disable tap highlight on IE -->
   <meta name="msapplication-tap-highlight" content="no">
@@ -57,7 +57,7 @@
   <header class="mdl-layout__header mdl-color-text--white mdl-color--light-blue-700">
     <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
       <div class="mdl-layout__header-row mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--12-col-desktop">
-        <h3><i class="material-icons">chat_bubble_outline</i> Guess 4 Digits - as Guest</h3>
+        <h3><i class="material-icons">chat_bubble_outline</i> Guess 4 Digits - as Host</h3>
       </div>
       <div id="user-container">
         <div hidden id="user-pic"></div>
@@ -80,10 +80,11 @@
         <div class="mdl-card__supporting-text mdl-color-text--grey-600">
           <div id="messages"></div>
           <form id="message-form" action="#">
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-              <input class="mdl-textfield__input" type="number" min="0123" max="9876" id="message" autocomplete="off" list="guess_hints">
-              <label class="mdl-textfield__label" for="message">Number...</label>
+            <div class="mdl-sliders">
+              <input class="mdl-slider mdl-js-slider" type="range" min="0" max="4" value="0" id="ansA">
+              <input class="mdl-slider mdl-js-slider" type="range" min="0" max="4" value="0" id="ansB">
             </div>
+            <span id="ansAB_show">0A0B</span>
             <button id="submit" disabled type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
               Submit
             </button>
@@ -93,7 +94,7 @@
           </form>
         </div>
       </div>
-      <datalist id="guess_hints"></datalist>
+
       <div id="must-signin-snackbar" class="mdl-js-snackbar mdl-snackbar">
         <div class="mdl-snackbar__text"></div>
         <button class="mdl-snackbar__action" type="button"></button>
@@ -103,7 +104,7 @@
   </main>
 </div>
 
-<script src="scripts/guest_services.js"></script>
-<script src="scripts/guest.js"></script>
+<script src="scripts/host_services.js"></script>
+<script src="scripts/host.js"></script>
 </body>
 </html>
