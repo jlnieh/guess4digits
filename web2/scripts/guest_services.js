@@ -17,16 +17,16 @@
 'use strict';
 
 var targetNumber = '5678';
-var testNumbers = [];
+var hintNumbers = [];
 
 function _resortHints() {
-    if (testNumbers.length > 3) {
-        var scrambleRounds = testNumbers.length * 2;
+    if (hintNumbers.length > 3) {
+        var scrambleRounds = hintNumbers.length * 2;
         while (scrambleRounds > 0) {
-            var i = Math.floor(Math.random() * (testNumbers.length - 1));
-            var t = testNumbers[0];
-            testNumbers[0] = testNumbers[i];
-            testNumbers[i] = t;
+            var i = Math.floor(Math.random() * (hintNumbers.length - 1));
+            var t = hintNumbers[0];
+            hintNumbers[0] = hintNumbers[i];
+            hintNumbers[i] = t;
             scrambleRounds--;
         }
     }
@@ -105,7 +105,7 @@ function submitNewNumber(guessNumber) {
 }
 
 function resetHints() {
-  testNumbers.length = 0;
+  hintNumbers.length = 0;
   for (var i=0; i<10; i++){
     for (var j=0; j<10; j++) {
       if (j == i) continue;
@@ -113,7 +113,7 @@ function resetHints() {
         if ((k==j) || (k==i)) continue;
         for (var l=0; l<10; l++) {
           if ((l==k) || (l==j) || (l==i)) continue;
-          testNumbers.push(i.toString()+j.toString()+k.toString()+l.toString());
+          hintNumbers.push(i.toString()+j.toString()+k.toString()+l.toString());
         }
       }
     }
@@ -124,19 +124,19 @@ function calcHints(guessStr, result, max=6) {
   return new Promise(function (resolve, reject) {
     var ansA = Number(result[0]);
     var ansB = Number(result[2]);
-    for (var i=testNumbers.length - 1; i>=0; i--) {
-      var testResult = compare4Digits(guessStr, testNumbers[i]);
+    for (var i=hintNumbers.length - 1; i>=0; i--) {
+      var testResult = compare4Digits(guessStr, hintNumbers[i]);
       if ((testResult[0] != ansA) || (testResult[1] != ansB)) {
-        testNumbers.splice(i, 1);
+        hintNumbers.splice(i, 1);
       }
     }
     
-    if (max < testNumbers.length) {
+    if (max < hintNumbers.length) {
       _resortHints();
     }
     else {
-      max = testNumbers.length;
+      max = hintNumbers.length;
     }
-    resolve(testNumbers.slice(0, max));
+    resolve(hintNumbers.slice(0, max));
   });
 }
