@@ -194,3 +194,9 @@ main, #messages-card {
   margin: 20px 0 0 0;
   text-align: center;
 }
+
+#helper-card {
+  height: 80px;
+  padding-bottom: 0;
+  margin-top: 15px;
+}

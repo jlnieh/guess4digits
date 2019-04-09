@@ -36,6 +36,8 @@ function showMessage(errMsg){
 }
 
 function startHostGame() {
+  dlgHelperElement.showModal();
+
   return requestNewHost()
           .then(() => requestNextGuess())
           .then(newGuess => showNewGuess(newGuess))
@@ -183,6 +185,9 @@ var submitButtonElement = document.getElementById('submit');
 var ansAInputElement = document.getElementById('ansA');
 var ansBInputElement = document.getElementById('ansB');
 var ansABDisplayElement = document.getElementById('ansAB_show');
+var dlgHelperElement = document.getElementById('dlgHelper');
+var targetInputElement = document.getElementById('target');
+var closeButtonElement = document.getElementById('close');
 
 // Saves message on form submit.
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
@@ -191,4 +196,8 @@ messageFormElement.addEventListener('reset', onMessageFormReset);
 ansAInputElement.addEventListener('change', toggleAnsA);
 ansBInputElement.addEventListener('change', toggleAnsB);
 
-startHostGame();
+closeButtonElement.addEventListener('click', function() {
+  dlgHelperElement.close();
+});
+
+window.addEventListener('load', startHostGame);
