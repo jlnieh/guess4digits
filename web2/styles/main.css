@@ -151,9 +151,6 @@ main, #messages-card {
   max-width: 300px;
   max-height: 200px;
 }
-#mediaCapture {
-  display: none;
-}
 @media screen and (max-width: 610px) {
   header {
     height: 113px;
@@ -199,4 +196,7 @@ main, #messages-card {
   height: 80px;
   padding-bottom: 0;
   margin-top: 15px;
+}
+.host_inputs {
+  display: none;
 }
