@@ -16,10 +16,10 @@
 
 'use strict';
 
-var hintNumbers = [];
+var guestTargets = [];
 
 function _resetAllHints() {
-    hintNumbers.length = 0;
+    guestTargets.length = 0;
     for (var i=0; i<10; i++){
       for (var j=0; j<10; j++) {
         if (j == i) continue;
@@ -27,49 +27,11 @@ function _resetAllHints() {
           if ((k==j) || (k==i)) continue;
           for (var l=0; l<10; l++) {
             if ((l==k) || (l==j) || (l==i)) continue;
-            hintNumbers.push(i.toString()+j.toString()+k.toString()+l.toString());
+            guestTargets.push(i.toString()+j.toString()+k.toString()+l.toString());
           }
         }
       }
     }
-}
-
-// export utilities
-function check4Digits(guessNum) {
-  return new Promise(function(resolve, reject) {
-    var i, j;
-    var guessStr = guessNum.toString();
-
-    if(!/(^\d{4}$)/.test(guessStr)) {
-      reject('It must be a 4-digits-number that you guessed!');
-    }
-    for (i=1; i<4; i++){
-      for (j=0; j<i; j++) {
-        if (guessStr[i] == guessStr[j]) {
-          reject('The number must have different digits!');
-        }
-      }
-    }
-    resolve(guessStr);
-  });
-}
-
-function compare4Digits(targetStr, guessStr) {
-    var i, j;
-    var A=0, B=0;
-    for (i=0; i<4; i++) {
-      for (j=0; j<4; j++) {
-        if (targetStr[i] == guessStr[j]) {
-          if (i==j) {
-            A++;
-          }
-          else {
-            B++;
-          }
-        }
-      }
-    }
-    return ([A, B]);
 }
 
 function requestNewHost() {
@@ -81,8 +43,8 @@ function requestNewHost() {
 
 function requestNextGuess() {
     return new Promise(function(resolve, reject) {
-        var chooseOne = Math.floor(Math.random() * (hintNumbers.length));
-        resolve(hintNumbers[chooseOne]);
+        var chooseOne = Math.floor(Math.random() * (guestTargets.length));
+        resolve(guestTargets[chooseOne]);
     });
 }
 
@@ -91,14 +53,14 @@ function submitAnswer(lastGuess, newAnswer) {
         var ansA = newAnswer[0];
         var ansB = newAnswer[2];
 
-        for (var i=hintNumbers.length - 1; i>=0; i--) {
-            var testResult = compare4Digits(lastGuess, hintNumbers[i]);
+        for (var i=guestTargets.length - 1; i>=0; i--) {
+            var testResult = compare4Digits(lastGuess, guestTargets[i]);
             if ((testResult[0] != ansA) || (testResult[1] != ansB)) {
-                hintNumbers.splice(i, 1);
+                guestTargets.splice(i, 1);
             }
         }
-        if (hintNumbers.length > 0) {
-            resolve(hintNumbers.length);
+        if (guestTargets.length > 0) {
+            resolve(guestTargets.length);
         } else {
             reject("Impossible! I cannot find the correct answer!");
         }
