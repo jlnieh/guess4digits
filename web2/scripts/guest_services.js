@@ -50,44 +50,6 @@ function _generateNewTarget() {
     return seedNum[0].toString() + seedNum[1].toString() + seedNum[2].toString() + seedNum[3].toString();
 }
 
-// export utilities
-function check4Digits(guessNum) {
-    return new Promise(function(resolve, reject) {
-      var i, j;
-      var guessStr = guessNum.toString();
-
-      if(!/(^\d{4}$)/.test(guessStr)) {
-        reject('It must be a 4-digits-number that you guessed!');
-      }
-      for (i=1; i<4; i++){
-        for (j=0; j<i; j++) {
-          if (guessStr[i] == guessStr[j]) {
-            reject('The number must have different digits!');
-          }
-        }
-      }
-      resolve(guessStr);
-    });
-}
-
-function compare4Digits(targetStr, guessStr) {
-    var i, j;
-    var A=0, B=0;
-    for (i=0; i<4; i++) {
-      for (j=0; j<4; j++) {
-        if (targetStr[i] == guessStr[j]) {
-          if (i==j) {
-            A++;
-          }
-          else {
-            B++;
-          }
-        }
-      }
-    }
-    return ([A, B]);
-}
-
 // export services
 function startNewGame() {
     return new Promise(function (resolve, reject) {
