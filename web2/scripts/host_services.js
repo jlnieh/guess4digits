@@ -34,6 +34,26 @@ function _resetAllHints() {
     }
 }
 
+// export utilities
+function check4Digits(guessNum) {
+  return new Promise(function(resolve, reject) {
+    var i, j;
+    var guessStr = guessNum.toString();
+
+    if(!/(^\d{4}$)/.test(guessStr)) {
+      reject('It must be a 4-digits-number that you guessed!');
+    }
+    for (i=1; i<4; i++){
+      for (j=0; j<i; j++) {
+        if (guessStr[i] == guessStr[j]) {
+          reject('The number must have different digits!');
+        }
+      }
+    }
+    resolve(guessStr);
+  });
+}
+
 function compare4Digits(targetStr, guessStr) {
     var i, j;
     var A=0, B=0;

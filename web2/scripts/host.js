@@ -21,12 +21,15 @@ var PIC_LOGO_USER = 'images/profile_placeholder.png';
 var PIC_LOGO_FIREBASE = 'images/firebase-logo.png';
 
 var lastGuess;
+var targetHelp = '';
 
 function showNewGuess(newGuess) {
   var id = 'c' + newGuess;
 
   lastGuess = newGuess;
   displayMessage(id, new Date(), 'System', newGuess, PIC_LOGO_FIREBASE);
+
+  setupHelpAnswer();
   submitButtonElement.removeAttribute('disabled');
 };
 
@@ -36,7 +39,12 @@ function showMessage(errMsg){
 }
 
 function startHostGame() {
-  dlgHelperElement.showModal();
+  targetInputElement.value = '';
+  ansAInputElement.value = 0;
+  ansBInputElement.value = 0;
+  setupTarget();
+  toggleAnsA();
+  toggleAnsB();
 
   return requestNewHost()
           .then(() => requestNextGuess())
@@ -46,14 +54,14 @@ function startHostGame() {
 
 function onMessageFormSubmit(e) {
   e.preventDefault();
-  
+
   var ansResult = ansABDisplayElement.innerText;
   var id = 'h' + lastGuess;
-   
+
   displayMessage(id, new Date(), 'User', lastGuess + ' >> ' + ansResult, PIC_LOGO_USER);
   submitAnswer(lastGuess, ansResult)
     .then(function() {
-      if ('4A0B' == ansResult) { 
+      if ('4A0B' == ansResult) {
         throw new String('Yes! I got it!');
       } else {
         return requestNextGuess();
@@ -66,10 +74,10 @@ function onMessageFormSubmit(e) {
 // Triggered when the reset the same
 function onMessageFormReset(e) {
   e.preventDefault();
-  
+
   while(messageListElement.firstChild) {
     messageListElement.removeChild(messageListElement.firstChild);
-  }  
+  }
 
   startHostGame();
 }
@@ -129,7 +137,7 @@ function displayMessage(id, timestamp, name, text, picUrl) {
     messageElement.textContent = text;
     // Replace all line breaks by <br>.
     messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
-  } 
+  }
   // Show the card fading-in and scroll to view the new message.
   setTimeout(function() {div.classList.add('visible')}, 1);
   messageListElement.scrollTop = messageListElement.scrollHeight;
@@ -141,13 +149,13 @@ function toggleAnsA() {
   var ansB = parseInt(ansBInputElement.value);
 
   switch(ansA) {
-    case 0: 
+    case 0:
       // ansBInputElement.max = 4;
       break;
     case 1:
       if (ansB > 3) ansBInputElement.value = ansB = 3;
       break;
-    case 2: 
+    case 2:
       if (ansB > 2) ansBInputElement.value = ansB = 2;
       break;
     default:
@@ -163,7 +171,7 @@ function toggleAnsB() {
 
   switch(ansB) {
     case 1:
-    case 2: 
+    case 2:
       if (ansA > 2) ansAInputElement.value = ansA = 2;
       break;
     case 3:
@@ -178,6 +186,37 @@ function toggleAnsB() {
   ansABDisplayElement.innerHTML = ansA + 'A' + ansB + 'B';
 }
 
+function setupHelpAnswer() {
+  if ((targetHelp) && (lastGuess)) {
+    var result = compare4Digits(targetHelp, lastGuess);
+    ansAInputElement.value = result[0];
+    ansBInputElement.value = result[1];
+  }
+  else {
+    ansAInputElement.value = 0;
+    ansBInputElement.value = 0;
+  }
+  toggleAnsA();
+  toggleAnsB();
+}
+
+function setupTarget() {
+  if (targetInputElement.value) {
+    check4Digits(targetInputElement.value)
+      .then(correctTarget => {
+        targetHelp = correctTarget;
+        setupHelpAnswer();
+      })
+      .catch(function() {
+        targetHelp = '';
+        setupHelpAnswer();
+      });
+  }
+  else {
+    targetHelp = '';
+  }
+}
+
 // Shortcuts to DOM Elements.
 var messageListElement = document.getElementById('messages');
 var messageFormElement = document.getElementById('message-form');
@@ -185,9 +224,7 @@ var submitButtonElement = document.getElementById('submit');
 var ansAInputElement = document.getElementById('ansA');
 var ansBInputElement = document.getElementById('ansB');
 var ansABDisplayElement = document.getElementById('ansAB_show');
-var dlgHelperElement = document.getElementById('dlgHelper');
 var targetInputElement = document.getElementById('target');
-var closeButtonElement = document.getElementById('close');
 
 // Saves message on form submit.
 messageFormElement.addEventListener('submit', onMessageFormSubmit);
@@ -196,8 +233,7 @@ messageFormElement.addEventListener('reset', onMessageFormReset);
 ansAInputElement.addEventListener('change', toggleAnsA);
 ansBInputElement.addEventListener('change', toggleAnsB);
 
-closeButtonElement.addEventListener('click', function() {
-  dlgHelperElement.close();
-});
+targetInputElement.addEventListener('keyup', setupTarget);
+targetInputElement.addEventListener('change', setupTarget);
 
-window.addEventListener('load', startHostGame);
+startHostGame();
